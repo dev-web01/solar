@@ -1,0 +1,26 @@
+{
+  "builds": [
+    {
+      "src": "backend/solarvision_api/wsgi.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/vite"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/solarvision_api/wsgi.py"
+    },
+    {
+      "src": "/media/(.*)",
+      "dest": "backend/solarvision_api/wsgi.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ]
+}
