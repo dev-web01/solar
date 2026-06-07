@@ -44,7 +44,4 @@ tzdata==2026.2
 ultralytics==8.4.60
 ultralytics-thop==2.0.20
 urllib3==2.7.0
-gunicorn  
-dj-database-url  
-psycopg2-binary  
 whitenoise 
