@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --color-solar-primary: #f59e0b;
+  --color-solar-accent: #10b981;
+  --color-solar-dark: #0f172a;
+}
