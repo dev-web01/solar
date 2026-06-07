@@ -1,26 +1,13 @@
 {
-  "builds": [
-    {
-      "src": "backend/solarvision_api/wsgi.py",
-      "use": "@vercel/python"
+  "experimentalServices": {
+    "frontend": {
+      "root": "frontend",
+      "routePrefix": "/",
+      "framework": "vite"
     },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/vite"
+    "backend": {
+      "root": "backend",
+      "routePrefix": "/api"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "backend/solarvision_api/wsgi.py"
-    },
-    {
-      "src": "/media/(.*)",
-      "dest": "backend/solarvision_api/wsgi.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "frontend/$1"
-    }
-  ]
+  }
 }
