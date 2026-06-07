@@ -32,6 +32,7 @@ class AnalysisResult(models.Model):
     obstacle_data = models.JSONField(default=dict, help_text="JSON mapping of detected obstacles")
     recommended_panel_orientation = models.CharField(max_length=100, default="South")
     recommended_system_size_kw = models.FloatField(default=0.0)
+    ai_summary = models.TextField(blank=True, null=True, help_text="AI generated natural language description")
     processed_at = models.DateTimeField(auto_now_add=True)
 
 class EnergyPrediction(models.Model):

@@ -26,7 +26,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def analyze(self, request, pk=None):
         project = self.get_object()
         from .ai_processor import analyze_project
-        analyze_project(project)
+        try:
+            analyze_project(project)
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            
         project.refresh_from_db()
         serializer = self.get_serializer(project)
         return Response(serializer.data)

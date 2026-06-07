@@ -55,7 +55,8 @@ export default function NewProject() {
       navigate(`/project/${projectId}`);
     } catch (error) {
       console.error('Error creating project:', error);
-      alert('Failed to process project. Please try again.');
+      const errorMsg = error.response?.data?.error || 'Failed to process project. Please try again.';
+      alert(`Error: ${errorMsg}`);
       setLoading(false);
     }
   };

@@ -36,6 +36,29 @@ def get_peak_sun_hours(lat, lon):
     # Fallback to 4.5 hours if API fails
     return 4.5
 
+def check_image_quality(image_path):
+    """Check if the image is blurry using Laplacian variance."""
+    try:
+        full_path = os.path.join(settings.MEDIA_ROOT, str(image_path).replace('project_images/', 'project_images\\'))
+        if not os.path.exists(full_path):
+             full_path = os.path.join(settings.MEDIA_ROOT, str(image_path))
+             
+        img = cv2.imread(full_path)
+        if img is None:
+            return False, "Could not read image file."
+            
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        
+        # Blur check using variance of Laplacian
+        laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+        if laplacian_var < 50: # Threshold for blur
+            return False, "Image is too blurry or unclear. Please upload a clear photo of the roof."
+            
+        return True, "OK"
+    except Exception as e:
+        print(f"Quality check error: {e}")
+        return True, "OK" # Let it pass if check fails
+
 def analyze_image_shadows(image_path):
     """Use OpenCV to detect dark spots (shadows) in the image."""
     try:
@@ -79,6 +102,9 @@ def analyze_project(project):
     obstacles = {}
     if num_images > 0:
         for img_obj in images:
+            is_valid, msg = check_image_quality(img_obj.image.name)
+            if not is_valid:
+                raise ValueError(msg)
             shadow_percentages.append(analyze_image_shadows(img_obj.image.name))
         
         shadow_coverage_percentage = sum(shadow_percentages) / len(shadow_percentages)
@@ -141,7 +167,23 @@ def analyze_project(project):
     analysis.light_intensity_percentage = round(light_intensity_percentage, 1)
     analysis.shadow_coverage_percentage = round(shadow_coverage_percentage, 1)
     analysis.obstacle_data = obstacles
-    analysis.recommended_panel_orientation = "South" if not lat or lat > 0 else "North"
+    orientation = "South" if not lat or lat > 0 else "North"
+    analysis.recommended_panel_orientation = orientation
+    
+    # Generate Textual Summary
+    suitability = "highly suitable" if solar_score >= 7.0 else "moderately suitable" if solar_score >= 4.0 else "not very suitable"
+    summary_text = (
+        f"Based on our AI analysis, this rooftop is {suitability} "
+        f"for solar installation with a feasibility score of {solar_score}/10. "
+        f"We recommend installing the panels facing {orientation} to maximize sunlight exposure. "
+        f"Approximately {int(usable_area)} sq meters of your roof is usable, receiving around {int(peak_sun_hours)} hours of peak sunlight daily. "
+    )
+    if total_obstacles > 0:
+        summary_text += f"We detected some potential obstacles causing around {int(shadow_coverage_percentage)}% shadow coverage, but our recommended {round(recommended_kw, 1)}kW system accounts for this."
+    else:
+        summary_text += f"No major obstacles were detected, making the roof an excellent candidate for the recommended {round(recommended_kw, 1)}kW system."
+        
+    analysis.ai_summary = summary_text
     
     # Panels required (Assuming 400W panels)
     panels_fit = int(recommended_kw / 0.4)

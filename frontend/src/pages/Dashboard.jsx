@@ -14,7 +14,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Download, CheckCircle, AlertTriangle, Info, MapPin } from 'lucide-react';
+import { Download, CheckCircle, AlertTriangle, Info, MapPin, Compass } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -132,6 +132,14 @@ export default function Dashboard() {
             <h3 className="text-xl font-semibold text-white flex items-center gap-2">
               <Info className="w-5 h-5 text-cyan-400" /> AI Site Analysis
             </h3>
+
+            {analysis?.ai_summary && (
+              <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50">
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {analysis.ai_summary}
+                </p>
+              </div>
+            )}
             
             <div className="space-y-4">
               <div>
@@ -177,10 +185,17 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-8">
           {/* Top stats */}
           <div className="grid sm:grid-cols-3 gap-4">
-            <div className="bg-slate-800/50 border border-slate-700 p-6 rounded-3xl">
+            <div className="bg-slate-800/50 border border-slate-700 p-6 rounded-3xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                <Compass className="w-24 h-24" />
+              </div>
               <p className="text-slate-400 text-sm mb-1">Recommended System</p>
               <p className="text-3xl font-bold text-white">{analysis?.recommended_system_size_kw} <span className="text-lg text-slate-500">kW</span></p>
-              <p className="text-xs text-slate-500 mt-2">{prediction?.panels_required} Panels ({analysis?.recommended_panel_orientation})</p>
+              <div className="mt-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-2 inline-block">
+                <p className="text-sm font-medium text-indigo-400 flex items-center gap-1">
+                  <Compass className="w-4 h-4" /> Face Panels: {analysis?.recommended_panel_orientation}
+                </p>
+              </div>
             </div>
             <div className="bg-slate-800/50 border border-slate-700 p-6 rounded-3xl">
               <p className="text-slate-400 text-sm mb-1">Annual Generation</p>

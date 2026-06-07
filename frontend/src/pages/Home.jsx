@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowRight, MapPin, Zap } from 'lucide-react';
+import { ArrowRight, MapPin, Zap, Trash2 } from 'lucide-react';
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -19,6 +19,20 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+
+  const handleDelete = async (e, id) => {
+    e.preventDefault(); // Prevent navigating to the project link
+    if (!window.confirm("Are you sure you want to delete this project?")) return;
+    
+    const API_URL = import.meta.env.PROD ? '' : 'http://localhost:8000';
+    try {
+      await axios.delete(`${API_URL}/api/projects/${id}/`);
+      setProjects(projects.filter(p => p.id !== id));
+    } catch (err) {
+      console.error("Error deleting project:", err);
+      alert("Failed to delete project.");
+    }
+  };
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
@@ -75,7 +89,16 @@ export default function Home() {
                       {project.analysis ? `${project.analysis.solar_score}/10` : 'Pending'}
                     </p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={(e) => handleDelete(e, project.id)}
+                      className="p-2 rounded-lg bg-slate-800/80 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-colors z-20 relative"
+                      title="Delete Project"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                    <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                  </div>
                 </div>
               </Link>
             ))}
