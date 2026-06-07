@@ -8,7 +8,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const API_URL = import.meta.env.PROD ? '' : 'http://localhost:8000';
     axios.get(`${API_URL}/api/projects/`)
       .then(res => {
         setProjects(res.data);
