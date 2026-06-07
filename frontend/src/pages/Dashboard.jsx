@@ -23,8 +23,10 @@ export default function Dashboard() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/projects/${id}/`)
+    axios.get(`${API_URL}/api/projects/${id}/`)
       .then(res => {
         setProject(res.data);
         setLoading(false);
@@ -100,7 +102,7 @@ export default function Dashboard() {
         </div>
         {report?.report_pdf && (
           <a
-            href={`http://localhost:8000${report.report_pdf}`}
+            href={`${API_URL}${report.report_pdf}`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors border border-slate-600"
@@ -208,7 +210,7 @@ export default function Dashboard() {
                 {project.images.map(img => (
                   <img 
                     key={img.id} 
-                    src={`http://localhost:8000${img.image}`} 
+                    src={`${API_URL}${img.image}`} 
                     alt="Rooftop" 
                     className="h-48 w-64 object-cover rounded-xl snap-start border border-slate-700 shadow-md"
                   />

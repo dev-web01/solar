@@ -31,23 +31,25 @@ export default function NewProject() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
     try {
       // 1. Create Project
-      const projectRes = await axios.post('http://localhost:8000/api/projects/', formData);
+      const projectRes = await axios.post(`${API_URL}/api/projects/`, formData);
       const projectId = projectRes.data.id;
 
       // 2. Upload Images
       for (const img of images) {
         const imgData = new FormData();
         imgData.append('image', img);
-        await axios.post(`http://localhost:8000/api/projects/${projectId}/upload_image/`, imgData, {
+        await axios.post(`${API_URL}/api/projects/${projectId}/upload_image/`, imgData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
 
       // 3. Trigger Analysis
-      await axios.post(`http://localhost:8000/api/projects/${projectId}/analyze/`);
+      await axios.post(`${API_URL}/api/projects/${projectId}/analyze/`);
 
       // 4. Navigate to Dashboard
       navigate(`/project/${projectId}`);
